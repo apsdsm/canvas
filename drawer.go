@@ -16,16 +16,25 @@ package tcelltools
 
 import "github.com/gdamore/tcell"
 
-// DrawHLine draws a horizontal line on the screen.
-func (d *TcellDrawer) DrawHLine(y, from, to int, style tcell.Style) {
-	for i := from; i < to; i++ {
-		d.screen.SetContent(i, y, '-', nil, style)
-	}
+// A Drawer draws shapes and text to a tcell screen.
+type Drawer interface {
+	DrawHLine(y, xFrom, xTo int, style tcell.Style)
+	DrawVLine(x, from, to int, style tcell.Style)
+	Paint(startX, startY, endX, endY int, char rune, style tcell.Style)
+	DrawWrappedText(minX, minY, maxX, maxY int, text string, style tcell.Style)
+	DrawText(x, y int, text string, style tcell.Style, maxWidth int)
 }
 
-// DrawVLine draws a vertical line on the screen.
-func (d *TcellDrawer) DrawVLine(x, from, to int, style tcell.Style) {
-	for i := from; i < to; i++ {
-		d.screen.SetContent(x, i, '|', nil, style)
+// TcellDrawer implements Drawer for Tcell
+type TcellDrawer struct {
+	screen ScreenBridge
+}
+
+// NewDrawer creates and returns a new drawer object.
+func NewDrawer(screen ScreenBridge) *TcellDrawer {
+	t := TcellDrawer{
+		screen: screen,
 	}
+
+	return &t
 }

@@ -25,7 +25,7 @@ import (
 // checks to see how many cells should be advanced in the x axis each call to SetContent before
 // it starts painting. If it turns out that it's impossible to paint the requested rune in the
 // remaining area, a blank space is painted instead.
-func Paint(screen ScreenBridge, startX, startY, endX, endY int, char rune, style tcell.Style) {
+func (d *TcellDrawer) Paint(startX, startY, endX, endY int, char rune, style tcell.Style) {
 
 	advance := 1
 
@@ -42,7 +42,7 @@ func Paint(screen ScreenBridge, startX, startY, endX, endY int, char rune, style
 				draw = ' '
 			}
 
-			screen.SetContent(x, y, draw, nil, style)
+			d.screen.SetContent(x, y, draw, nil, style)
 		}
 	}
 }

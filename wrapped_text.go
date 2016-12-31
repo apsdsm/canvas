@@ -24,9 +24,9 @@ import (
 
 // DrawWrappedText will print text to the screen, wrapping where possible to stay inside the bounds supplied
 // in the paramters, and without overstepping the bounds of the screen.
-func DrawWrappedText(screen ScreenBridge, minX, minY, maxX, maxY int, text string, style tcell.Style) {
+func (d *TcellDrawer) DrawWrappedText(minX, minY, maxX, maxY int, text string, style tcell.Style) {
 
-	screenX, screenY := screen.Size()
+	screenX, screenY := d.screen.Size()
 
 	if maxX > screenX {
 		maxX = screenX
@@ -78,7 +78,7 @@ func DrawWrappedText(screen ScreenBridge, minX, minY, maxX, maxY int, text strin
 			}
 
 			if x+advance <= maxX {
-				screen.SetContent(x, y, r, nil, style)
+				d.screen.SetContent(x, y, r, nil, style)
 				x += advance
 
 			} else {
@@ -90,7 +90,7 @@ func DrawWrappedText(screen ScreenBridge, minX, minY, maxX, maxY int, text strin
 
 				} else if lastSpaceIndex > -1 {
 					// paint over everything since last space
-					Paint(screen, lastSpaceScreen, y, x, y, ' ', style)
+					d.Paint(lastSpaceScreen, y, x, y, ' ', style)
 
 					// advance y, reset x, rewind i to last space
 					y++

@@ -27,11 +27,14 @@ var _ = Describe("drawing wrapped text", func() {
 
 	var (
 		screen *fakes.ScreenBridge
-		style  = tcell.StyleDefault
+		style  tcell.Style
+		drawer Drawer
 	)
 
 	BeforeEach(func() {
+		style = tcell.StyleDefault
 		screen = fakes.NewScreenBridge(100, 100)
+		drawer = NewDrawer(screen)
 	})
 
 	It("draws text", func() {
@@ -45,7 +48,7 @@ var _ = Describe("drawing wrapped text", func() {
 		}
 
 		for _, test := range drawTextTests {
-			DrawText(screen, test.x, test.y, test.text, style, 20)
+			drawer.DrawText(test.x, test.y, test.text, style, 20)
 			Expect(screen.GetLine(test.y, test.x, test.x+test.len)).To(Equal(test.text))
 		}
 	})

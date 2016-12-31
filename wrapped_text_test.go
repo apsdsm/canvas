@@ -27,37 +27,40 @@ var _ = Describe("drawing wrapped text", func() {
 
 	var (
 		screen *fakes.ScreenBridge
-		style  = tcell.StyleDefault
+		style  tcell.Style
+		drawer Drawer
 	)
 
 	BeforeEach(func() {
+		style = tcell.StyleDefault
 		screen = fakes.NewScreenBridge(100, 100)
+		drawer = NewDrawer(screen)
 	})
 
 	It("writes text with wrapping inside a designated area", func() {
 
-		DrawWrappedText(screen, 0, 0, 10, 10, "this is some text", style)
+		drawer.DrawWrappedText(0, 0, 10, 10, "this is some text", style)
 
 		Expect(screen.GetLine(0, 0, 9)).To(Equal("this is   "))
 		Expect(screen.GetLine(1, 0, 8)).To(Equal("some text"))
 	})
 
 	It("wraps text when eol start of new word", func() {
-		DrawWrappedText(screen, 0, 0, 8, 8, "abc def ghi jkl", style)
+		drawer.DrawWrappedText(0, 0, 8, 8, "abc def ghi jkl", style)
 
 		Expect(screen.GetLine(0, 0, 7)).To(Equal("abc def "))
 		Expect(screen.GetLine(1, 0, 6)).To(Equal("ghi jkl"))
 	})
 
 	It("wraps text when eol is space", func() {
-		DrawWrappedText(screen, 0, 0, 7, 7, "abc def ghi jkl", style)
+		drawer.DrawWrappedText(0, 0, 7, 7, "abc def ghi jkl", style)
 
 		Expect(screen.GetLine(0, 0, 6)).To(Equal("abc def"))
 		Expect(screen.GetLine(1, 0, 6)).To(Equal("ghi jkl"))
 	})
 
 	It("wraps very long text", func() {
-		DrawWrappedText(screen, 0, 0, 6, 6, "abcdefghijkl", style)
+		drawer.DrawWrappedText(0, 0, 6, 6, "abcdefghijkl", style)
 
 		Expect(screen.GetLine(0, 0, 5)).To(Equal("abcdef"))
 		Expect(screen.GetLine(1, 0, 5)).To(Equal("ghijkl"))
@@ -67,7 +70,7 @@ var _ = Describe("drawing wrapped text", func() {
 
 		beforeWrite := screen.GetLine(1, 0, 5)
 
-		DrawWrappedText(screen, 0, 0, 6, 0, "abcdefghijkl", style)
+		drawer.DrawWrappedText(0, 0, 6, 0, "abcdefghijkl", style)
 
 		Expect(screen.GetLine(0, 0, 5)).To(Equal("abcdef"))
 		Expect(screen.GetLine(1, 0, 5)).To(Equal(beforeWrite))
@@ -76,7 +79,7 @@ var _ = Describe("drawing wrapped text", func() {
 	It("wraps text with line breaks", func() {
 		emptyLine := screen.GetLine(0, 0, 3)
 
-		DrawWrappedText(screen, 0, 0, 6, 6, "abcd\n\nefgh\n\nijkl", style)
+		drawer.DrawWrappedText(0, 0, 6, 6, "abcd\n\nefgh\n\nijkl", style)
 
 		Expect(screen.GetLine(0, 0, 3)).To(Equal("abcd"))
 		Expect(screen.GetLine(1, 0, 3)).To(Equal(emptyLine))

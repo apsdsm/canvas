@@ -28,14 +28,17 @@ var _ = Describe("drawing wrapped text", func() {
 	var (
 		screen *fakes.ScreenBridge
 		style  = tcell.StyleDefault
+		drawer Drawer
 	)
 
 	BeforeEach(func() {
+		style = tcell.StyleDefault
 		screen = fakes.NewScreenBridge(100, 100)
+		drawer = NewDrawer(screen)
 	})
 
 	It("paints over a section of the screen with a single rune", func() {
-		Paint(screen, 0, 0, 2, 2, '!', style)
+		drawer.Paint(0, 0, 2, 2, '!', style)
 
 		for i := 0; i < 3; i++ {
 			Expect(screen.GetLine(i, 0, 2)).To(Equal("!!!"))
@@ -43,7 +46,7 @@ var _ = Describe("drawing wrapped text", func() {
 	})
 
 	It("paints as many double width characters as possible and pads remaining cells with space", func() {
-		Paint(screen, 0, 0, 2, 2, '萌', style)
+		drawer.Paint(0, 0, 2, 2, '萌', style)
 
 		for i := 0; i < 3; i++ {
 			Expect(screen.GetLine(i, 0, 2)).To(Equal("萌 "))

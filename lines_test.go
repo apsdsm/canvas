@@ -23,19 +23,22 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("drawing wrapped text", func() {
+var _ = Describe("drawing lines", func() {
 
 	var (
 		screen *fakes.ScreenBridge
-		style  = tcell.StyleDefault
+		style  tcell.Style
+		drawer Drawer
 	)
 
 	BeforeEach(func() {
+		style = tcell.StyleDefault
 		screen = fakes.NewScreenBridge(100, 100)
+		drawer = NewDrawer(screen)
 	})
 
 	It("draws a horizonal line", func() {
-		DrawHLine(screen, 50, 0, 100, style)
+		drawer.DrawHLine(50, 0, 100, style)
 
 		for i := 0; i < 100; i++ {
 			Expect(screen.GetRuneAt(i, 50)).To(Equal('-'))
@@ -43,7 +46,7 @@ var _ = Describe("drawing wrapped text", func() {
 	})
 
 	It("draws a vertical line", func() {
-		DrawVLine(screen, 50, 0, 100, style)
+		drawer.DrawVLine(50, 0, 100, style)
 
 		for i := 0; i < 100; i++ {
 			Expect(screen.GetRuneAt(50, i)).To(Equal('|'))
