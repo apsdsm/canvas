@@ -21,7 +21,7 @@ import (
 )
 
 // DrawText draws text to the x y coords, automatically allocating enough space for double width chars.
-func (d *TcellDrawer) DrawText(x, y int, text string, style tcell.Style, maxWidth int) {
+func (d *TcellDrawer) DrawText(x, y, maxX int, text string, style tcell.Style) {
 	lasti := 0
 	used := 0
 
@@ -57,7 +57,7 @@ func (d *TcellDrawer) DrawText(x, y int, text string, style tcell.Style, maxWidt
 
 		// if the real string width is larger than the max width and we only have 3 spaces left before
 		// we hit the max size, fill that space with dots (drawing an ellipse).
-		if textWidth > maxWidth && used == maxWidth-3 {
+		if textWidth > maxX && used == maxX-3 {
 			for e := x; e <= x+2; e++ {
 				d.screen.SetContent(e, y, '.', nil, style)
 			}

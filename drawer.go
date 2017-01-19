@@ -22,7 +22,7 @@ type Drawer interface {
 	DrawVLine(x, from, to int, style tcell.Style)
 	Paint(startX, startY, endX, endY int, char rune, style tcell.Style)
 	DrawWrappedText(minX, minY, maxX, maxY int, text string, style tcell.Style)
-	DrawText(x, y int, text string, style tcell.Style, maxWidth int)
+	DrawText(x, y, maxX int, text string, style tcell.Style)
 }
 
 // TcellDrawer implements Drawer for Tcell
