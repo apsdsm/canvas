@@ -16,14 +16,9 @@ package fakes
 
 import (
 	"bytes"
-	"unicode/utf8"
 
 	"github.com/gdamore/tcell"
 )
-
-type line struct {
-	cells []cell
-}
 
 type cell struct {
 	codePoint rune
@@ -31,14 +26,14 @@ type cell struct {
 	bgColor   tcell.Color
 }
 
-// ScreenBridge provides a fake screen bridge for testing. It does not draw to the screen,
-// but keeps track of everything that is drawn inside of it. It can be queried to retrurn
+// ScreenBridge is a low level fake screen bridge for testing. It does not draw to the screen,
+// but keeps track of everything that is drawn inside of it. It can be queried to return
 // values for previous draw methods.
 type ScreenBridge struct {
 	width  int
 	height int
 
-	lines []line
+	cells [][]cell
 
 	CalledSetContent int
 	CalledSize       int
@@ -50,11 +45,12 @@ func NewScreenBridge(width, height int) *ScreenBridge {
 	s := ScreenBridge{
 		width:  width,
 		height: height,
-		lines:  make([]line, height),
 	}
 
-	for r := range s.lines {
-		s.lines[r].cells = make([]cell, width)
+	s.cells = make([][]cell, width)
+
+	for i := range s.cells {
+		s.cells[i] = make([]cell, height)
 	}
 
 	return &s
@@ -63,8 +59,8 @@ func NewScreenBridge(width, height int) *ScreenBridge {
 // SetContent is a dummy method for tcell's SetContent (https://godoc.org/github.com/gdamore/tcell#CellBuffer.SetContent)
 func (f *ScreenBridge) SetContent(x int, y int, mainc rune, combc []rune, style tcell.Style) {
 	f.CalledSetContent++
-	f.lines[y].cells[x].codePoint = mainc
-	f.lines[y].cells[x].fgColor, f.lines[y].cells[x].bgColor, _ = style.Decompose()
+	f.cells[x][y].codePoint = mainc
+	f.cells[x][y].fgColor, f.cells[x][y].bgColor, _ = style.Decompose()
 }
 
 // Size is a dummy method for tcel's Size (https://godoc.org/github.com/gdamore/tcell#CellBuffer.Size)
@@ -74,22 +70,23 @@ func (f *ScreenBridge) Size() (int, int) {
 }
 
 // GetLine returns the input that was generated for line at y
-func (f *ScreenBridge) GetLine(y, from, to int) string {
+func (f *ScreenBridge) GetLine(y, x, len int) string {
 	var buffer bytes.Buffer
 
-	for r := from; r <= to; r++ {
+	for i := 0; i < len; i++ {
+
+		if x >= f.width {
+			break
+		}
 
 		// get rune
-		current := f.lines[y].cells[r].codePoint
+		current := f.cells[x][y].codePoint
 
-		// check width
-		len := utf8.RuneLen(current)
+		// write rune to buffer
+		_, _ = buffer.WriteRune(current)
 
-		_, _ = buffer.WriteRune(f.lines[y].cells[r].codePoint)
-
-		if len > 1 {
-			r++
-		}
+		// advance x
+		x++
 	}
 
 	return buffer.String()
@@ -97,10 +94,10 @@ func (f *ScreenBridge) GetLine(y, from, to int) string {
 
 // GetStyleAt returns the tcell style used in a cell
 func (f *ScreenBridge) GetStyleAt(x, y int) (fg, bg tcell.Color) {
-	return f.lines[y].cells[x].fgColor, f.lines[y].cells[x].bgColor
+	return f.cells[x][y].fgColor, f.cells[x][y].bgColor
 }
 
 // GetRuneAt returns the rune used in the cell
 func (f *ScreenBridge) GetRuneAt(x, y int) (r rune) {
-	return f.lines[y].cells[x].codePoint
+	return f.cells[x][y].codePoint
 }

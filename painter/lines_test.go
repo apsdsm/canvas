@@ -12,11 +12,11 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-package tcelltools_test
+package painter_test
 
 import (
-	"github.com/apsdsm/binder/fakes"
-	. "github.com/apsdsm/tcelltools"
+	"github.com/apsdsm/canvas"
+	"github.com/apsdsm/canvas/painter"
 	"github.com/gdamore/tcell"
 
 	. "github.com/onsi/ginkgo"
@@ -26,30 +26,32 @@ import (
 var _ = Describe("drawing lines", func() {
 
 	var (
-		screen *fakes.ScreenBridge
-		style  tcell.Style
-		drawer Drawer
+		style tcell.Style
+		layer *canvas.Layer
 	)
 
 	BeforeEach(func() {
 		style = tcell.StyleDefault
-		screen = fakes.NewScreenBridge(100, 100)
-		drawer = NewDrawer(screen)
+		layer = canvas.NewLayer(10, 10, 0, 0)
 	})
 
+	// draws -> ────── (x10)
 	It("draws a horizonal line", func() {
-		drawer.DrawHLine(50, 0, 100, style)
+		painter.DrawHLine(layer, 0, 0, 10, style)
 
-		for i := 0; i < 100; i++ {
-			Expect(screen.GetRuneAt(i, 50)).To(Equal('-'))
+		for i := 0; i < 10; i++ {
+			Expect(layer.Grid[i][0].Rune).To(Equal('─'))
 		}
 	})
 
+	//          │
+	// draws -> │
+	//          │ (x10)
 	It("draws a vertical line", func() {
-		drawer.DrawVLine(50, 0, 100, style)
+		painter.DrawVLine(layer, 0, 0, 10, style)
 
-		for i := 0; i < 100; i++ {
-			Expect(screen.GetRuneAt(50, i)).To(Equal('|'))
+		for i := 0; i < 10; i++ {
+			Expect(layer.Grid[0][i].Rune).To(Equal('│'))
 		}
 	})
 })

@@ -12,11 +12,11 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-package tcelltools_test
+package painter_test
 
 import (
-	"github.com/apsdsm/binder/fakes"
-	. "github.com/apsdsm/tcelltools"
+	"github.com/apsdsm/canvas"
+	"github.com/apsdsm/canvas/painter"
 	"github.com/gdamore/tcell"
 
 	. "github.com/onsi/ginkgo"
@@ -26,30 +26,34 @@ import (
 var _ = Describe("drawing wrapped text", func() {
 
 	var (
-		screen *fakes.ScreenBridge
-		style  = tcell.StyleDefault
-		drawer Drawer
+		style tcell.Style
+		layer *canvas.Layer
 	)
 
 	BeforeEach(func() {
 		style = tcell.StyleDefault
-		screen = fakes.NewScreenBridge(100, 100)
-		drawer = NewDrawer(screen)
+		layer = canvas.NewLayer(10, 10, 0, 0)
 	})
 
 	It("paints over a section of the screen with a single rune", func() {
-		drawer.Paint(0, 0, 2, 2, '!', style)
+		painter.Paint(layer, 0, 0, 2, 2, '!', style)
 
-		for i := 0; i < 3; i++ {
-			Expect(screen.GetLine(i, 0, 2)).To(Equal("!!!"))
+		for x := 0; x <= 2; x++ {
+			for y := 0; y <= 2; y++ {
+				Expect(layer.Grid[x][y].Rune).To(Equal('!'))
+			}
 		}
 	})
 
-	It("paints as many double width characters as possible and pads remaining cells with space", func() {
-		drawer.Paint(0, 0, 2, 2, '萌', style)
+	It("does not paint a double width rune if there isn't enough space", func() {
+		painter.Paint(layer, 9, 9, 9, 9, 'の', style)
 
-		for i := 0; i < 3; i++ {
-			Expect(screen.GetLine(i, 0, 2)).To(Equal("萌 "))
-		}
+		Expect(layer.Grid[9][9].Rune).To(Equal(' '))
+	})
+
+	It("does not paint out of bounds", func() {
+		Expect(func() {
+			painter.Paint(layer, 5, 5, 10, 10, '!', style)
+		}).ShouldNot(Panic())
 	})
 })

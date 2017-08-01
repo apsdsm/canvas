@@ -12,14 +12,38 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-package canvas
+package painter
 
 import (
+	"unicode/utf8"
+
+	"github.com/apsdsm/canvas"
 	"github.com/gdamore/tcell"
 )
 
-// ScreenBridge bridges methods used in tcell to methods used by the tools. This allows for easier faking.
-type ScreenBridge interface {
-	SetContent(x int, y int, mainc rune, combc []rune, style tcell.Style)
-	Size() (int, int)
+// DrawText draws text to the x y coords, automatically allocating enough space for double width chars.
+func DrawText(layer *canvas.Layer, x, y int, text string, style tcell.Style) {
+
+	// for each rune in the string, draw it on the layer
+	for _, r := range text {
+
+		if x > layer.MaxX {
+			break
+		}
+
+		size := 1
+
+		if utf8.RuneLen(r) > 1 {
+			size = 2
+		}
+
+		if x == layer.MaxX && size > 1 {
+			layer.Grid[x][y].Rune = 0
+			break
+		}
+
+		layer.Grid[x][y].Rune = r
+
+		x++
+	}
 }

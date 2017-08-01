@@ -12,11 +12,11 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-package tcelltools_test
+package painter_test
 
 import (
-	"github.com/apsdsm/binder/fakes"
-	. "github.com/apsdsm/tcelltools"
+	"github.com/apsdsm/canvas"
+	"github.com/apsdsm/canvas/painter"
 	"github.com/gdamore/tcell"
 
 	. "github.com/onsi/ginkgo"
@@ -26,30 +26,31 @@ import (
 var _ = Describe("drawing wrapped text", func() {
 
 	var (
-		screen *fakes.ScreenBridge
-		style  tcell.Style
-		drawer Drawer
+		style tcell.Style
+		layer *canvas.Layer
 	)
 
 	BeforeEach(func() {
 		style = tcell.StyleDefault
-		screen = fakes.NewScreenBridge(100, 100)
-		drawer = NewDrawer(screen)
+		layer = canvas.NewLayer(10, 10, 0, 0)
 	})
 
 	It("draws text", func() {
 
 		var drawTextTests = []struct {
-			x, y, len int
-			text      string
+			x, y, stringSize int
+			text             string
 		}{
-			{0, 0, 3, "ほげ"},
-			{2, 4, 7, "alphabet"},
+			{0, 0, 4, "ほげ"},
+			{0, 1, 8, "alphabet"},
 		}
 
 		for _, test := range drawTextTests {
-			drawer.DrawText(test.x, test.y, test.text, style, 20)
-			Expect(screen.GetLine(test.y, test.x, test.x+test.len)).To(Equal(test.text))
+			painter.DrawText(layer, test.x, test.y, test.text, style)
+
+			line := getLayerLine(layer, test.x, test.y, test.stringSize)
+
+			Expect(line).To(Equal(test.text))
 		}
 	})
 })

@@ -12,11 +12,12 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-package tcelltools
+package painter
 
 import (
 	"unicode/utf8"
 
+	"github.com/apsdsm/canvas"
 	"github.com/gdamore/tcell"
 )
 
@@ -25,24 +26,23 @@ import (
 // checks to see how many cells should be advanced in the x axis each call to SetContent before
 // it starts painting. If it turns out that it's impossible to paint the requested rune in the
 // remaining area, a blank space is painted instead.
-func (d *TcellDrawer) Paint(startX, startY, endX, endY int, char rune, style tcell.Style) {
+func Paint(layer *canvas.Layer, startX, startY, endX, endY int, char rune, style tcell.Style) {
 
-	advance := 1
+	size := 1
 
 	if utf8.RuneLen(char) > 1 {
-		advance = 2
+		size = 2
 	}
 
 	for y := startY; y <= endY; y++ {
-		for x := startX; x <= endX; x += advance {
+		for x := startX; x <= endX; x += size {
 
-			draw := char
-
-			if advance > 1 && x == endX {
-				draw = ' '
+			if x == layer.MaxX && size > 1 {
+				layer.SetRune(x, y, ' ')
+				break
 			}
 
-			d.screen.SetContent(x, y, draw, nil, style)
+			layer.SetRune(x, y, char)
 		}
 	}
 }

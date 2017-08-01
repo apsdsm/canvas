@@ -12,20 +12,37 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-package tcelltools
+package painter
 
-import "github.com/gdamore/tcell"
+import (
+	"github.com/apsdsm/canvas"
+	"github.com/gdamore/tcell"
+)
 
 // DrawHLine draws a horizontal line on the screen.
-func (d *TcellDrawer) DrawHLine(y, from, to int, style tcell.Style) {
-	for i := from; i < to; i++ {
-		d.screen.SetContent(i, y, '-', nil, style)
+func DrawHLine(layer *canvas.Layer, x, y, len int, style tcell.Style) {
+	for i := 0; i < len; i++ {
+
+		if x >= layer.Width {
+			break
+		}
+
+		layer.Grid[x][y].Rune = '─'
+
+		x++
 	}
 }
 
 // DrawVLine draws a vertical line on the screen.
-func (d *TcellDrawer) DrawVLine(x, from, to int, style tcell.Style) {
-	for i := from; i < to; i++ {
-		d.screen.SetContent(x, i, '|', nil, style)
+func DrawVLine(layer *canvas.Layer, x, y, len int, style tcell.Style) {
+	for i := 0; i < len; i++ {
+
+		if y >= layer.Height {
+			break
+		}
+
+		layer.Grid[x][y].Rune = '│'
+
+		y++
 	}
 }

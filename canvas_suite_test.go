@@ -1,4 +1,4 @@
-package tcelltools_test
+package canvas_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestTcelltools(t *testing.T) {
+func TestCanvas(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Tcelltools Suite")
+	RunSpecs(t, "Canvas Suite")
 }
