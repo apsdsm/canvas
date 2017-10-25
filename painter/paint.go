@@ -22,6 +22,7 @@ import (
 )
 
 // Paint covers the rectangle region specified by the two coord pairs with the supplied rune.
+//
 // Because runes can be either 1 or 2 spaces wide when painted on the screen, the method first
 // checks to see how many cells should be advanced in the x axis each call to SetContent before
 // it starts painting. If it turns out that it's impossible to paint the requested rune in the

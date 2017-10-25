@@ -57,10 +57,10 @@ var _ = Describe("Canvas", func() {
 			c := NewCanvas(screen)
 			l := NewLayer(10, 5, 1, 2)
 
-			c.AddLayer(l)
+			c.AddLayer(&l)
 
 			Expect(len(c.Layers)).To(Equal(1))
-			Expect(c.Layers[0]).To(BeEquivalentTo(l))
+			Expect(c.Layers[0]).To(BeEquivalentTo(&l))
 		})
 
 		It("adds new layers to top of stack", func() {
@@ -68,15 +68,15 @@ var _ = Describe("Canvas", func() {
 			l1 := NewLayer(10, 10, 1, 0)
 			l2 := NewLayer(10, 10, 2, 0)
 
-			c.AddLayer(l1)
+			c.AddLayer(&l1)
 
 			Expect(len(c.Layers)).To(Equal(1))
-			Expect(c.Layers[0]).To(BeEquivalentTo(l1))
+			Expect(c.Layers[0]).To(BeEquivalentTo(&l1))
 
-			c.AddLayer(l2)
+			c.AddLayer(&l2)
 
 			Expect(len(c.Layers)).To(Equal(2))
-			Expect(c.Layers[0]).To(BeEquivalentTo(l2))
+			Expect(c.Layers[0]).To(BeEquivalentTo(&l2))
 
 		})
 	})
@@ -95,9 +95,9 @@ var _ = Describe("Canvas", func() {
 			c := NewCanvas(screen)
 			l := NewLayer(10, 10, 0, 0)
 
-			painter.DrawText(l, 0, 0, "foobar", style)
+			painter.DrawText(&l, 0, 0, "foobar", style)
 
-			c.AddLayer(l)
+			c.AddLayer(&l)
 			c.Draw()
 
 			Expect(screen.GetLine(0, 0, 6)).To(Equal("foobar"))
@@ -107,9 +107,9 @@ var _ = Describe("Canvas", func() {
 			c := NewCanvas(screen)
 			l := NewLayer(10, 10, 5, 5)
 
-			painter.DrawText(l, 0, 0, "foobar", style)
+			painter.DrawText(&l, 0, 0, "foobar", style)
 
-			c.AddLayer(l)
+			c.AddLayer(&l)
 			c.Draw()
 
 			Expect(screen.GetLine(5, 5, 6)).To(Equal("fooba"))
@@ -120,14 +120,22 @@ var _ = Describe("Canvas", func() {
 			l1 := NewLayer(10, 10, 0, 0)
 			l2 := NewLayer(10, 10, 0, 0)
 
-			painter.DrawText(l1, 0, 0, "foobar", style)
-			painter.DrawText(l2, 0, 0, "abcdef", style)
+			painter.DrawText(&l1, 0, 0, "foobar", style)
+			painter.DrawText(&l2, 0, 0, "abcdef", style)
 
-			c.AddLayer(l1)
-			c.AddLayer(l2)
+			c.AddLayer(&l1)
+			c.AddLayer(&l2)
 			c.Draw()
 
 			Expect(screen.GetLine(0, 0, 6)).To(Equal("abcdef"))
+		})
+
+		It("updates the screen after drawing", func() {
+			c := NewCanvas(screen)
+
+			c.Draw()
+
+			Expect(screen.CalledShow).To(Equal(1))
 		})
 	})
 

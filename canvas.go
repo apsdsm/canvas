@@ -18,17 +18,17 @@ import "github.com/gdamore/tcell"
 
 // A Canvas is a drawable area on top of a screen interface.
 type Canvas struct {
-	screen ScreenBridge
+	screen Screen
 	Layers []*Layer
 }
 
 // NewCanvas returns a new, uninitiated canvas object.
-func NewCanvas(screen ScreenBridge) *Canvas {
+func NewCanvas(screen Screen) Canvas {
 	c := Canvas{}
 	c.screen = screen
 	c.Layers = make([]*Layer, 0, 5)
 
-	return &c
+	return c
 }
 
 // AddLayer adds a new blank layer to a canvas object.
@@ -37,7 +37,7 @@ func (c *Canvas) AddLayer(layers ...*Layer) {
 	if len(layers) == 0 {
 		width, height := c.screen.Size()
 		l := NewLayer(width, height, 0, 0)
-		c.Layers = append([]*Layer{l}, c.Layers...)
+		c.Layers = append([]*Layer{&l}, c.Layers...)
 		return
 	}
 
@@ -61,7 +61,7 @@ func (c *Canvas) Draw() {
 		height--
 	}
 
-	// for each cell in the screen
+	// for each Cell in the screen
 	for x := 0; x <= width; x++ {
 		for y := 0; y < height; y++ {
 
@@ -72,7 +72,7 @@ func (c *Canvas) Draw() {
 				offsetX := x - layer.X
 				offsetY := y - layer.Y
 
-				// if there is a layer cell at that position which is not empty
+				// if there is a layer Cell at that position which is not empty
 				if offsetX >= 0 && offsetY >= 0 && layer.Grid[offsetX][offsetY].Rune != 0 {
 					c.screen.SetContent(x, y, layer.Grid[offsetX][offsetY].Rune, nil, style)
 					break
@@ -80,4 +80,7 @@ func (c *Canvas) Draw() {
 			}
 		}
 	}
+
+	// show screen contents after drawing
+	c.screen.Show()
 }

@@ -27,7 +27,7 @@ var _ = Describe("drawing lines", func() {
 
 	var (
 		style tcell.Style
-		layer *canvas.Layer
+		layer canvas.Layer
 	)
 
 	BeforeEach(func() {
@@ -37,7 +37,7 @@ var _ = Describe("drawing lines", func() {
 
 	// draws -> ────── (x10)
 	It("draws a horizonal line", func() {
-		painter.DrawHLine(layer, 0, 0, 10, style)
+		painter.DrawHLine(&layer, 0, 0, 10, style)
 
 		for i := 0; i < 10; i++ {
 			Expect(layer.Grid[i][0].Rune).To(Equal('─'))
@@ -48,7 +48,7 @@ var _ = Describe("drawing lines", func() {
 	// draws -> │
 	//          │ (x10)
 	It("draws a vertical line", func() {
-		painter.DrawVLine(layer, 0, 0, 10, style)
+		painter.DrawVLine(&layer, 0, 0, 10, style)
 
 		for i := 0; i < 10; i++ {
 			Expect(layer.Grid[0][i].Rune).To(Equal('│'))

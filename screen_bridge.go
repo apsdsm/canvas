@@ -18,8 +18,9 @@ import (
 	"github.com/gdamore/tcell"
 )
 
-// ScreenBridge bridges methods used in tcell to methods used by the tools. This allows for easier faking.
-type ScreenBridge interface {
+// Screen bridges methods used in a tcell screen to methods used by the tools. This allows for easier faking.
+type Screen interface {
 	SetContent(x int, y int, mainc rune, combc []rune, style tcell.Style)
 	Size() (int, int)
+	Show()
 }

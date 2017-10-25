@@ -27,7 +27,7 @@ var _ = Describe("drawing wrapped text", func() {
 
 	var (
 		style tcell.Style
-		layer *canvas.Layer
+		layer canvas.Layer
 	)
 
 	BeforeEach(func() {
@@ -36,7 +36,7 @@ var _ = Describe("drawing wrapped text", func() {
 	})
 
 	It("paints over a section of the screen with a single rune", func() {
-		painter.Paint(layer, 0, 0, 2, 2, '!', style)
+		painter.Paint(&layer, 0, 0, 2, 2, '!', style)
 
 		for x := 0; x <= 2; x++ {
 			for y := 0; y <= 2; y++ {
@@ -46,14 +46,14 @@ var _ = Describe("drawing wrapped text", func() {
 	})
 
 	It("does not paint a double width rune if there isn't enough space", func() {
-		painter.Paint(layer, 9, 9, 9, 9, 'の', style)
+		painter.Paint(&layer, 9, 9, 9, 9, 'の', style)
 
 		Expect(layer.Grid[9][9].Rune).To(Equal(' '))
 	})
 
 	It("does not paint out of bounds", func() {
 		Expect(func() {
-			painter.Paint(layer, 5, 5, 10, 10, '!', style)
+			painter.Paint(&layer, 5, 5, 10, 10, '!', style)
 		}).ShouldNot(Panic())
 	})
 })

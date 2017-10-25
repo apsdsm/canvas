@@ -27,7 +27,7 @@ var _ = Describe("drawing wrapped text", func() {
 
 	var (
 		style tcell.Style
-		layer *canvas.Layer
+		layer canvas.Layer
 	)
 
 	BeforeEach(func() {
@@ -46,9 +46,9 @@ var _ = Describe("drawing wrapped text", func() {
 		}
 
 		for _, test := range drawTextTests {
-			painter.DrawText(layer, test.x, test.y, test.text, style)
+			painter.DrawText(&layer, test.x, test.y, test.text, style)
 
-			line := getLayerLine(layer, test.x, test.y, test.stringSize)
+			line := getLayerLine(&layer, test.x, test.y, test.stringSize)
 
 			Expect(line).To(Equal(test.text))
 		}

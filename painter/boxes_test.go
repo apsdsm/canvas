@@ -12,7 +12,7 @@ import (
 var _ = Describe("Boxes", func() {
 	var (
 		style tcell.Style
-		layer *canvas.Layer
+		layer canvas.Layer
 	)
 
 	BeforeEach(func() {
@@ -21,7 +21,7 @@ var _ = Describe("Boxes", func() {
 	})
 
 	It("draws a box", func() {
-		painter.DrawBox(layer, 0, 0, 5, 5, style)
+		painter.DrawBox(&layer, 0, 0, 5, 5, style)
 
 		// expect corners to be drawn correctly
 		Expect(layer.Grid[0][0].Rune).To(Equal('┌'))
@@ -44,7 +44,7 @@ var _ = Describe("Boxes", func() {
 
 	It("does not draw a box out of bounds", func() {
 		Expect(func() {
-			painter.DrawBox(layer, 0, 0, 20, 20, style)
+			painter.DrawBox(&layer, 0, 0, 20, 20, style)
 		}).ShouldNot(Panic())
 	})
 })
