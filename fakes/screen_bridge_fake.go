@@ -37,6 +37,7 @@ type ScreenBridge struct {
 
 	CalledSetContent int
 	CalledSize       int
+	CalledShow       int
 }
 
 // NewScreenBridge returns a new ScreenBridge object. The object is initialized with the
@@ -67,6 +68,11 @@ func (f *ScreenBridge) SetContent(x int, y int, mainc rune, combc []rune, style 
 func (f *ScreenBridge) Size() (int, int) {
 	f.CalledSize++
 	return f.width, f.height
+}
+
+// Show is a dummy method for tcel's Show (TODO: link here!!)
+func (f *ScreenBridge) Show() {
+	f.CalledShow++
 }
 
 // GetLine returns the input that was generated for line at y
