@@ -14,26 +14,27 @@
 
 package canvas
 
-type cell struct {
-	Rune rune
-}
+import "github.com/gdamore/tcell"
 
 // A Layer is a drawable area in a canvas that carries its own origin coords
 // and max boundaries.
 type Layer struct {
-	Grid                            [][]cell
+	Grid                            [][]Cell
 	Width, Height, X, Y, MaxX, MaxY int
 }
 
-// NewLayer creates a new layer with the specified width and height with the
-// spefified offset.
-func NewLayer(width, height, x, y int) *Layer {
+// NewLayer creates a new layer with the specified size at the specified offset
+func NewLayer(width, height, x, y int) Layer {
 	l := Layer{}
 
-	l.Grid = make([][]cell, width)
+	l.Grid = make([][]Cell, width)
 
 	for i := range l.Grid {
-		l.Grid[i] = make([]cell, height)
+		l.Grid[i] = make([]Cell, height)
+		for y := range l.Grid[i] {
+			l.Grid[i][y].Rune = 0
+			l.Grid[i][y].Style = tcell.StyleDefault
+		}
 	}
 
 	l.Width = width
@@ -43,13 +44,19 @@ func NewLayer(width, height, x, y int) *Layer {
 	l.MaxX = width - 1
 	l.MaxY = height - 1
 
-	return &l
+	return l
 }
 
-// SetRune will set the cell at the given coordinates with the provided rune.
+// SetRune will set the Cell at the given coordinates with the provided rune.
 func (l *Layer) SetRune(x, y int, r rune) {
-	if x <= l.MaxX && y <= l.MaxY {
+	if l.InBounds(x, y) {
 		l.Grid[x][y].Rune = r
+	}
+}
+
+func (l *Layer) SetStyle(x, y int, style tcell.Style) {
+	if l.InBounds(x, y) {
+		l.Grid[x][y].Style = style
 	}
 }
 
@@ -71,5 +78,37 @@ func normalize(target, min, max int) int {
 		return max
 	} else {
 		return target
+	}
+}
+
+// InBounds returns true if cell is inside layer bounds
+func (l *Layer) InBounds(x, y int) bool {
+	return x >= 0 && x < l.Width && y >= 0 && y < l.Height
+}
+
+// At returns the cell at the given coords, or nil if no such position exists
+func (l *Layer) At(x, y int) *Cell {
+	if l.InBounds(x, y) {
+		return &l.Grid[x][y]
+	}
+	return nil
+}
+
+// Each will pass each cell in the grid to the provided closure
+func (l *Layer) Each(f func(*Cell)) {
+	for x := range l.Grid {
+		for y := range l.Grid[x] {
+			f(&l.Grid[x][y])
+		}
+	}
+}
+
+// @todo write test
+func (l *Layer) Clear() {
+	for x := range l.Grid {
+		for y := range l.Grid[x] {
+			l.Grid[x][y].Rune = 0
+			l.Grid[x][y].Style = tcell.StyleDefault
+		}
 	}
 }
