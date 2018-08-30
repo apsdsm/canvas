@@ -104,6 +104,7 @@ func (l *Layer) Each(f func(*Cell)) {
 }
 
 // @todo write test
+// Clear will set each of the runes in the layer to zero and the style to the default
 func (l *Layer) Clear() {
 	for x := range l.Grid {
 		for y := range l.Grid[x] {

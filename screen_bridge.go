@@ -23,4 +23,5 @@ type Screen interface {
 	SetContent(x int, y int, mainc rune, combc []rune, style tcell.Style)
 	Size() (int, int)
 	Show()
+	Fill(r rune, s tcell.Style)
 }

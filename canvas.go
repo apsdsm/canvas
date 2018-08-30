@@ -49,7 +49,36 @@ func (c *Canvas) AddLayer(layers ...*Layer) {
 // Draw will draw the contents of all layers to the screen.
 func (c *Canvas) Draw() {
 
-	style := tcell.StyleDefault.Foreground(tcell.ColorWhite)
+	// flush the buffer contents
+	c.screen.Fill(' ', tcell.StyleDefault)
+
+	// get the latest max and y values
+	maxX, maxY := c.latestMaxXY()
+
+	// for each Cell of each layer
+	for x := 0; x <= maxX; x++ {
+		for y := 0; y < maxY; y++ {
+			for _, layer := range c.Layers {
+
+				// get the rune at that position if it exists
+				offsetX := x - layer.X
+				offsetY := y - layer.Y
+
+				// if there is a layer Cell at that position which is not empty
+				if offsetX >= 0 && offsetY >= 0 && layer.Grid[offsetX][offsetY].Rune != 0 {
+					c.screen.SetContent(x, y, layer.Grid[offsetX][offsetY].Rune, nil, layer.Grid[offsetX][offsetY].Style)
+					break
+				}
+			}
+		}
+	}
+
+	// show screen contents after drawing
+	c.screen.Show()
+}
+
+// latestMaxXY gets the maximum x and y ranges for the current canvas. It is expected that the
+func (c *Canvas) latestMaxXY() (int, int) {
 
 	width, height := c.screen.Size()
 
@@ -61,26 +90,5 @@ func (c *Canvas) Draw() {
 		height--
 	}
 
-	// for each Cell in the screen
-	for x := 0; x <= width; x++ {
-		for y := 0; y < height; y++ {
-
-			// for each layer
-			for _, layer := range c.Layers {
-
-				// get the rune at that position if it exists
-				offsetX := x - layer.X
-				offsetY := y - layer.Y
-
-				// if there is a layer Cell at that position which is not empty
-				if offsetX >= 0 && offsetY >= 0 && layer.Grid[offsetX][offsetY].Rune != 0 {
-					c.screen.SetContent(x, y, layer.Grid[offsetX][offsetY].Rune, nil, style)
-					break
-				}
-			}
-		}
-	}
-
-	// show screen contents after drawing
-	c.screen.Show()
+	return width, height
 }
