@@ -27,7 +27,7 @@ func DrawHLine(layer *canvas.Layer, x, y, len int, style tcell.Style) {
 			break
 		}
 
-		layer.Grid[x][y].Rune = '─'
+		layer.Grid[x][y].Rune = '-'
 
 		x++
 	}
@@ -41,7 +41,7 @@ func DrawVLine(layer *canvas.Layer, x, y, len int, style tcell.Style) {
 			break
 		}
 
-		layer.Grid[x][y].Rune = '│'
+		layer.Grid[x][y].Rune = '|'
 
 		y++
 	}

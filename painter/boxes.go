@@ -22,21 +22,26 @@ import (
 // DrawBox will draw a box on the layer
 func DrawBox(layer *canvas.Layer, startX, startY, endX, endY int, style tcell.Style) {
 
+	// fmt.Println(startX)
+	// fmt.Println(startY)
+	// fmt.Println(endX)
+	// fmt.Println(endY)
+
 	// draw corners using set rune
-	layer.SetRune(startX, startY, '┌')
-	layer.SetRune(endX, startY, '┐')
-	layer.SetRune(endX, endY, '┘')
-	layer.SetRune(startX, endY, '└')
+	layer.SetRune(startX, startY, '+')
+	layer.SetRune(endX, startY, '+')
+	layer.SetRune(endX, endY, '+')
+	layer.SetRune(startX, endY, '+')
 
 	// draw top and bottom lines
 	for i := startX + 1; i < endX; i++ {
-		layer.SetRune(i, startY, '─')
-		layer.SetRune(i, endY, '─')
+		layer.SetRune(i, startY, '-')
+		layer.SetRune(i, endY, '-')
 	}
 
 	// draw left and right lines
 	for i := startY + 1; i < endY; i++ {
-		layer.SetRune(startY, i, '│')
-		layer.SetRune(endY, i, '│')
+		layer.SetRune(startX, i, '|')
+		layer.SetRune(endX, i, '|')
 	}
 }
