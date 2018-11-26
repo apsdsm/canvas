@@ -67,7 +67,7 @@ func (c *Canvas) Draw() {
 				offsetY := y - layer.Y
 
 				// if there is a layer Cell at that position which is not empty
-				if offsetX >= 0 && offsetY >= 0 && layer.Grid[offsetX][offsetY].Rune != 0 {
+				if offsetX >= 0 && offsetY >= 0 && offsetX <= layer.MaxX && offsetY <= layer.MaxY && layer.Grid[offsetX][offsetY].Rune != 0 {
 					c.screen.SetContent(x, y, layer.Grid[offsetX][offsetY].Rune, nil, layer.Grid[offsetX][offsetY].Style)
 					break
 				}
