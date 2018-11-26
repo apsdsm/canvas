@@ -14,7 +14,9 @@
 
 package canvas
 
-import "github.com/gdamore/tcell"
+import (
+	"github.com/gdamore/tcell"
+)
 
 // A Canvas is a drawable area on top of a screen interface.
 type Canvas struct {
@@ -26,7 +28,7 @@ type Canvas struct {
 func NewCanvas(screen Screen) Canvas {
 	c := Canvas{}
 	c.screen = screen
-	c.Layers = make([]*Layer, 0, 5)
+	c.Layers = make([]*Layer, 0)
 
 	return c
 }
@@ -57,7 +59,7 @@ func (c *Canvas) Draw() {
 
 	// for each Cell of each layer
 	for x := 0; x <= maxX; x++ {
-		for y := 0; y < maxY; y++ {
+		for y := 0; y <= maxY; y++ {
 			for _, layer := range c.Layers {
 
 				// get the rune at that position if it exists
@@ -77,7 +79,7 @@ func (c *Canvas) Draw() {
 	c.screen.Show()
 }
 
-// latestMaxXY gets the maximum x and y ranges for the current canvas. It is expected that the
+// latestMaxXY gets the maximum x and y ranges for the current canvas.
 func (c *Canvas) latestMaxXY() (int, int) {
 
 	width, height := c.screen.Size()
